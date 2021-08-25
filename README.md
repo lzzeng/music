@@ -1,2 +1,6 @@
 # music
-a music player by vue.js
+> A music player by vue.js
+
+
+
+<img src="music.png" alt="player" style="zoom:67%;" />
