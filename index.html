@@ -17,7 +17,7 @@
 
     <!--es6转es5插件-->
 <!--    <script src="https://cdn.bootcss.com/babel-polyfill/7.4.4/polyfill.min.js" type="text/javascript"></script>-->
-<!--    <script src="static/js/polyfill.min.js" type="text/javascript"></script> -->
+    <script src="static/js/polyfill.min.js" type="text/javascript"></script>
     <!--vue-->
 <!--    <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>-->
     <script src="static/js/vue.min.js"></script>
@@ -603,6 +603,7 @@
         /*}*/
 
         body {
+            background-color: #0b0b0b;
             background-image: url('static/bg.jpeg');
             /*height: 100%;*/
             /*width: 100%;*/
@@ -658,6 +659,8 @@
             top: 0;
             position: absolute;
         }
+
+        [v-cloak] {display:none !important}
     </style>
 </head>
 <body>
@@ -666,7 +669,7 @@
     <div class="audio" @click.stop="close_all">
         <audio :src="song.url" id="audio" controls></audio>
 
-        <div class="lyrics-part">
+        <div class="lyrics-part" v-cloak>
             <p class="title">{{song.name}}</p>
             <p class="artist">{{song.artist}}</p>
             <div class="lyrics" ref="lyrics">
@@ -690,7 +693,7 @@
                     <div class="ap-playlist-header-close">⬇</div>
                 </div>
                 <!-- 列表内容 -->
-                <div class="ap-playlist-body ps">
+                <div class="ap-playlist-body ps" v-cloak>
                     <ol>
                         <li class="ap-playlist-line"
                             :class="{'ap-playlist-line-active': index == i}"
@@ -739,7 +742,7 @@
                 </div>
                 <div class="ap-controller-center">
                     <!-- 歌曲信息 -->
-                    <div class="ap-song-msg">
+                    <div class="ap-song-msg" v-cloak>
                         <span class="ap-name">{{song.name}}</span>
                         <span class="ap-artist">-{{song.artist}}</span>
                         <span class="ap-time">
@@ -830,7 +833,7 @@
 
                     <!-- 播放列表按钮 -->
                     <div class="ap-button ap-playlist-button" @click.stop="handleList">
-                        <div class="ap-playlist-button-bg">
+                        <div class="ap-playlist-button-bg" v-cloak>
                             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
                                 <path d="M5.371 6.857h9.943c0.457 0 0.8 0.343 0.8 0.8v0c0 0.457-0.343 0.8-0.8 0.8h-9.943c-0.457 0-0.8-0.343-0.8-0.8v0c0-0.457 0.343-0.8 0.8-0.8z"></path>
                                 <path d="M5.371 11.086h7.429c0.457 0 0.914 0.343 0.914 0.8v0c0 0.457-0.343 0.8-0.8 0.8h-7.543c-0.457 0-0.8-0.343-0.8-0.8v0c0-0.457 0.343-0.8 0.8-0.8z"></path>
@@ -859,7 +862,7 @@
             <search-box :is-show="showSearch" :open-fun="openSearch" @push-song="pushNewSong"
                         @play-song="playSong"></search-box>
             <!-- 提示区 -->
-            <div class="ap-toast" :class="{'ap-toast-hide': error.length<=0}">{{error}}</div>
+            <div class="ap-toast" :class="{'ap-toast-hide': error.length<=0}" v-cloak>{{error}}</div>
         </div>
     </div>
 </div>
@@ -870,7 +873,7 @@
             <input type="text" class="search-input" v-model="searchValue" placeholder="请输入歌曲名或歌手"
                    @keyup.enter="search(searchValue)">
             <button class="search-btn" @click="search(searchValue)">搜索</button>
-            <div class="ps">
+            <div class="ps" v-cloak>
                 <ul class="result-list">
                     <!--<li class="item" v-for="(item, i) in resultList" :key="item.id" :data-index="i">-->
                     <li class="item" v-for="(item, i) in resultList" :data-index="i" @dblclick="playNow(item)">
@@ -961,7 +964,7 @@
                     error: function (msg) {
                         console.log(msg);
                         $.ajax({
-                            url: 'static/songs/2.json?callback=callBack',
+                            url: 'static/2.json?callback=callBack',
                             dataType: 'jsonp',
                             data: '',
                             type: 'get',
