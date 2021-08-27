@@ -666,7 +666,7 @@
 <body>
 <div id="app">
     <!-- 浏览器原生播放器 -->
-    <div class="audio" @click.stop="close_all">
+    <div class="audio" @click.stop="close_all" @dblclick.stop="openSearch">
         <audio :src="song.url" id="audio" controls></audio>
 
         <div class="lyrics-part" v-cloak>
@@ -791,6 +791,7 @@
                     <div class="ap-line">
                         <div class="ap-line-draw"></div>
                     </div>
+
                     <!-- 音量 -->
                     <div class="ap-button ap-volume-button">
                         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
@@ -1052,40 +1053,8 @@
                     time: '04:31',
                     artist: '刘珂矣',
                     album: '半壶纱',
-                    cover: 'https://s4.music.126.net/style/web2/img/default/default_album.jpg',
+                    cover: '',
                     url: 'static/media/风筝误.mp3',
-                }, {
-                    id: 2,
-                    name: '遇见',
-                    time: '03:29',
-                    artist: '孙燕姿',
-                    album: '白羽毛之恋 华语典藏情歌 Vol.2',
-                    cover: 'https://s4.music.126.net/style/web2/img/default/default_album.jpg',
-                    url: 'http://www.ytmp3.cn/down/52946.mp3',
-                }, {
-                    id: 3,
-                    name: '后来',
-                    time: '05:41',
-                    artist: '刘若英',
-                    album: '我等你',
-                    cover: 'https://s4.music.126.net/style/web2/img/default/default_album.jpg',
-                    url: 'http://www.ytmp3.cn/down/48101.mp3',
-                }, {
-                    id: 4,
-                    name: '原来你也在这里',
-                    time: '03:38',
-                    artist: '刘若英',
-                    album: '我的失败与伟大',
-                    cover: 'https://s4.music.126.net/style/web2/img/default/default_album.jpg',
-                    url: 'http://www.ytmp3.cn/down/73352.mp3',
-                },{
-                    id: 5,
-                    name: '欧若拉',
-                    time: '04:18',
-                    artist: '张韶涵',
-                    album: '欧若拉',
-                    cover: 'https://s4.music.126.net/style/web2/img/default/default_album.jpg',
-                    url: 'http://www.ytmp3.cn/down/50699.mp3',
                 }
             ]
         },
@@ -1094,13 +1063,10 @@
             if (tempArr && tempArr.length > 0) {
                 this.songList = tempArr;
             }
-            this.song = this.songList[this.index];
-            // this.currentLyrics = this.getLyric(this.song.lyric);
-            // this.getLyric(this.song.lyric);
-            this.getLyric(this.song.name);
+            // this.song = this.songList[this.index];
+            // this.getLyric(this.song);
         },
         mounted() {
-            // audio的DOM结构获取需要在mounted中，在created中的话会变成 <audio :src="song.url" id="audio" controls autoplay></audio>
             audio = document.getElementById('audio');
             this.getData();
             this.setPageListen();
@@ -1114,16 +1080,12 @@
                     if (this.song === null){
                         console.log("song is null");
                     }
-                    // console.log("watch song ... " + this.song.name);
-                    // this.percent = 0;
-                    // this.getLyric(this.song.lyric);
-                    if (this.song.name)  this.getLyric(this.song.name);
+                    if (this.song.name)  this.getLyric(this.song);
                 },
                 deep: true
             },
             songList: {
                 handler() {
-                    // console.log("handle songList ...");
                     localStorage.setItem('songList', JSON.stringify(this.songList));
                 },
                 deep: true
@@ -1139,7 +1101,6 @@
                 }
             },
             deleteSong(index){
-                // console.log("deleteSong this.index begin: " + this.index);
                 this.songList.splice(index, 1);
                 if (this.songList.length === 0) {
                     this.index = -1;
@@ -1149,13 +1110,11 @@
 
                 if (index === this.index) {
                     this.index = this.index === this.songList.length ? this.index-2 : this.index-1;
-                    // console.log("deleteSong this.index: " + this.index);
                     if (this.playing) this.next();
                 }
                 else if (index < this.index){
                     this.index--;
                 }
-                // console.log("deleteSong this.index end: " + this.index);
             },
             openSearch(){
                 this.showSearch = !this.showSearch;
@@ -1185,13 +1144,7 @@
             playSong(item){
                 let temp = this.alreadyExist(item);
                 if (temp === false) {
-                    // console.log("playSong this.songList: ");
-                    // console.log(this.songList);
-                    // console.log("playSong this.songList length: " + this.songList.length);
-                    // console.log("playSong this.index: " + this.index);
                     this.songList.splice(this.index + 1, 0, item);
-                    // console.log("playSong this songList 2: ");
-                    // console.log(this.songList);
                     this.next();
                 } else {
                     this.playExistSong(temp);
@@ -1216,7 +1169,6 @@
             },
             // 暂停与播放
             play() {
-                // console.log("my play");
                 if (this.playing) {
                     this.playing = false;
                     audio.pause();
@@ -1241,30 +1193,25 @@
                 this.audioInit();
             },
             next() {
-                // console.log("my next");
-                // console.log("my next this.index:" + this.index);
                 if (this.index === this.songList.length - 1) this.index = -1;
                 this.index++;
                 this.song = this.songList[this.index];
-                // console.log("my next this.song:" + this.song);
                 this.playing = false;
                 this.percent = 0;
                 this.$nextTick(() => {
                     this.play();
                 })
             },
-            getLyric(url) {
-                if (!url) {
+            getLyric(q) {
+                if (!q) {
                     self.currentLyrics = [{time: 0, text: '此歌曲暂无歌词~'}];
                     return;
                 }
-
                 let self = this;
                 self.currentLyrics = [{time: 0, text: '此歌曲暂无歌词~'}];
-                // console.log("get lyrics: " + url);
                 let lyc = null;
                 for (var v of lyric0) {
-                    if (url === v["name"]) {
+                    if (q.name === v["name"] && q.artist === v["artist"]) {
                         lyc = v["lyric"];
                     }
                 }
@@ -1276,7 +1223,6 @@
                 //     }, time);
                 // };
                 // sleep(fun, 100);
-
                 setTimeout(() => {
                     this.refactoringLyrics(lyc);  // this也可以? 此处的this是外面的this
                 }, 100);
@@ -1296,35 +1242,34 @@
                 //     }
                 // })
             },
-            refactoringLyrics(lyric){
-                console.log("refactoringLyrics");
-                // console.log(lyric);
-                if(!lyric){
+            refactoringLyrics(lyric) {
+                if (!lyric) {
                     console.log("refactoringLyrics return null");
                     return null;
                 }
-                let text = lyric.split('[offset:0]')[1];
+                //let text = lyric.split(/\[offset:[0-9]+\]/)[1];
+                let text = lyric;
                 let textArr = text.split('\n');
                 let lyricsArr = [],translate=[];
-                textArr.forEach((item,index)=>{
+                textArr.forEach((item, index) => {
                     let time = 0,text='';
-                    if(item.indexOf('[x-trans]') > -1){
+                    if (item.indexOf('[x-trans]') > -1) {
                         translate.push(item.split('[x-trans]')[1])
-                    } else if(item.trim() !=''){
+                    } else if (item.trim() != '') {
                         time = item.slice(1, 6).split(':');
                         time = parseInt(time[0]) * 60 + parseInt(time[1]);
+                        if (!time) return true;
                         text = item.slice(10);
                         let arr = text.split('>');
-                        let str = arr.reduce((a,b)=>{
+                        let str = arr.reduce((a, b) => {
                             return a.split('<')[0] + b.split('<')[0]
                         });
-
-                        // console.log("time, str" + ":" + time    + ", " + str);
                         str = str === "" ? "~~~" : str;
                         let obj = {
                             time: time,
                             text: str
                         };
+                        // console.log("time,str: " + time + "," + str);
                         lyricsArr.push(obj);
                     }
                 });
@@ -1413,6 +1358,7 @@
                             _this.error = '未找到资源';
                             break;
                     }
+
                     // audio.readyState == '0' && (_this.error = '音频地址错误');
                     setTimeout(() => {
                         _this.error = '';
@@ -1434,10 +1380,11 @@
                     }
                     _this.song = _this.songList[_this.index];
                     _this.thumbSlide = true;
-                    // 此处需要一定的延迟让audio的dom结构获取到，额，你们自己意会或者可以试着去掉看bug
+
                     setTimeout(() => {
                         audio.play();
                     }, 100);
+
                     // 解决因为transition的回弹bug
                     setTimeout(() => {
                         _this.thumbSlide = false;
